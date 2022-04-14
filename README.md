@@ -1,7 +1,7 @@
 
-# Project Title
+# Serverless LAPS (SLAPS)
 
-Serverless LAPS for Intune Deployment
+Serverless LAPS for deployment via Intune, to randomise Local Administrator passwords on a 3 month cycle and store all passwords in your Azure Vault.
 
 ## Description
 
@@ -48,10 +48,11 @@ command to run if program contains helper info
 
 ## Authors
 
-Contributors names and contact info
+John Seerden  
+[@jseerden](https://twitter.com/jseerden)
 
-ex. Dominique Pizzie  
-ex. [@DomPizzie](https://twitter.com/dompizzie)
+Mark Kinsey
+[@MarkDKinsey](https://twitter.com/MarkDKinsey)
 
 ## Version History
 
