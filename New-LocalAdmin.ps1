@@ -77,12 +77,6 @@ else {
         "contentType": "Local Administrator Credentials",
         "tags": {
             "Username": "$userName"
-            "Model": "$Model"
-            "Manufacturer": "$Manufacturer"
-            "OS_BuildNumber": "$OS_BuildNumber"
-            "OS_Version": "$OS_Version"
-            "Operating_System": "$OS_Edition"
-
         }
     }
 "@
