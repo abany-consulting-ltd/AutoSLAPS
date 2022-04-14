@@ -31,11 +31,15 @@ function New-Password {
     ($array | Get-Random -Count $array.Count) -join ""
 }
 
-Function Generate-Password {
-    -join ('abcdefghkmnrstuvwxyzABCDEFGHKLMNPRSTUVWXYZ23456789$%&*#'.ToCharArray() | Get-Random -Count 10)   # Add characters and/or password length to suit your organisation's requirements
+Function Get-Password {
+    $alphabets = -join ('abcdefghkmnrstuvwxyzABCDEFGHKLMNPRSTUVWXYZ'.ToCharArray() | Get-Random -Count 10)   # Add characters and/or password length to suit your organisation's requirements
+    $numbers = -join ('23456789'.ToCharArray() | Get-Random -Count 3)
+    $specials = -join ('@?$%&*#!'.ToCharArray() | Get-Random -Count 3)   # Add characters and/or password length to suit your organisation's requirements
+    $clrPwd = $alphabets + $numbers + $specials
+    (Get-Random -Count 16 -InputObject ([char[]]$clrPwd)) -join ''
 }
 
-$password = Generate-Password
+$password = Get-Password
 
 # Generate a new body to set a secret in the Azure Key Vault
 $body = $request.body | Select-Object -Property * -ExcludeProperty keyName
