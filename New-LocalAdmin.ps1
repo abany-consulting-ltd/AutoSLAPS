@@ -69,7 +69,7 @@ else {
 
     # Create a new Local User, change the password if it already exists.
     try {
-        New-LocalUser -Name $userName -Password $securePassword -PasswordNeverExpires:$true -AccountNeverExpires:$true -ErrorAction Stop
+        New-LocalUser -Name $userName -Password $securePassword -PasswordNeverExpires:$true -AccountNeverExpires:$true -Description "Local administrator account created by Intune." -ErrorAction Stop
     }
     catch {
         # If it already exists, catch it and continue.
