@@ -74,7 +74,7 @@ else {
     $body = @"
     {
         "keyName": "$env:COMPUTERNAME",
-        "contentType": "Local Administrator Credentials for $env:COMPUTERNAME",
+        "contentType": "Local Administrator Credentials",
         "tags": {
             "Username": "$userName"
             "Model": "$Model"
