@@ -76,7 +76,12 @@ else {
         "keyName": "$env:COMPUTERNAME",
         "contentType": "Local Administrator Credentials",
         "tags": {
-            "Username": "$userName"
+            "Username": "$userName",
+            "Model": "$Model",
+            "Manufacturer": "$Manufacturer",
+            "OS_BuildNumber": "$OS_BuildNumber",
+            "OS_Version": "$OS_Version",
+            "Operating_System": "$OS_Edition"
         }
     }
 "@
