@@ -67,6 +67,14 @@ else {
     # Convert password to Secure String
     $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
 
+    # Create a Scheduled Task if it is not present.
+    $taskName = "SLAPS Password Reset"
+    $task = $null
+    $task = Get-ScheduledTask | Where-Object {$_.TaskName -like "$taskName"}
+    if ($task -eq $null) {
+        Start-Process -FilePath $PSScriptRoot\schtask.bat | Out-Null
+    }
+
     # Create a new Local User, change the password if it already exists.
     try {
         New-LocalUser -Name $userName -Password $securePassword -PasswordNeverExpires:$true -AccountNeverExpires:$true -Description "Local administrator account created by Intune." -ErrorAction Stop
