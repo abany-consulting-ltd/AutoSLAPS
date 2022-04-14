@@ -51,6 +51,13 @@ else {
     # Define the userName for the Local Administrator
     $userName = "acl.iadmin"
 
+    # Get system info for tags
+    $Model = (Get-CimInstance -ClassName Win32_ComputerSystem).Model
+    $Manufacturer = (Get-CimInstance -ClassName Win32_ComputerSystem).Manufacturer
+    $OS_BuildNumber = (Get-CimInstance -ClassName Win32_OperatingSystem).buildnumber
+    $OS_Version = (Get-CimInstance -ClassName Win32_OperatingSystem).version
+    $OS_Edition = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").ProductName
+
     # Azure Function Uri (containing "azurewebsites.net") for storing Local Administrator secret in Azure Key Vault
     # $uri = 'https://myfunctions.azurewebsites.net/api/Set-KeyVaultSecret?code=s0mer4nd0mstr1ng/pIZPg=='
     $uri = 'https://acl-fun-slaps-01.azurewebsites.net/api/Set-KeyVaultSecret?code=cfDXX5dvJ06bQHVqO8qWpEdalmKKVMA2lN25h7QBxLxusk0mzMRBaw=='
@@ -67,9 +74,15 @@ else {
     $body = @"
     {
         "keyName": "$env:COMPUTERNAME",
-        "contentType": "Local Administrator Credentials",
+        "contentType": "Local Administrator Credentials for $env:COMPUTERNAME",
         "tags": {
             "Username": "$userName"
+            "Model": "$Model"
+            "Manufacturer": "$Manufacturer"
+            "OS_BuildNumber": "$OS_BuildNumber"
+            "OS_Version": "$OS_Version"
+            "Operating_System": "$OS_Edition"
+
         }
     }
 "@
