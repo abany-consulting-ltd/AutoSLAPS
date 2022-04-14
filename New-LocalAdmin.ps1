@@ -2,6 +2,27 @@
 # Based on a template created by Oliver Kieselbach @ https://gist.github.com/okieselbach/4f11ba37a6848e08e8f82d9f2ffff516
 $exitCode = 0
 
+# == FUNCTIONS ======================================================================================================================
+
+function Disable-BuiltInAdmin {
+    
+       # Ensure that the built in Administrator account is disabled
+       $builtInAdmin = Get-LocalUser -Name Administrator
+            
+       if ($builtInAdmin.Enabled -eq "True") {
+           Disable-LocalUser -Name Administrator -Confirm:$false
+           if($?) {
+               Write-Output "Disabled the built in Administrator account"
+           } else {
+               Write-Output "Unable to disable the built in Administrator account. Please check."
+           }
+       }
+    
+}
+
+
+# ===================================================================================================================================
+
 if (-not [System.Environment]::Is64BitProcess) {
     # start new PowerShell as x64 bit process, wait for it and gather exit code and standard error output
     $sysNativePowerShell = "$($PSHOME.ToLower().Replace("syswow64", "sysnative"))\powershell.exe"
@@ -67,13 +88,6 @@ else {
     # Convert password to Secure String
     $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
 
-    # Create a Scheduled Task if it is not present.
-    $taskName = "SLAPS Password Reset"
-    $task = $null
-    $task = Get-ScheduledTask | Where-Object {$_.TaskName -like "$taskName"}
-    if ($task -eq $null) {
-        Start-Process -FilePath $PSScriptRoot\schtask.bat | Out-Null
-    }
 
     # Create a new Local User, change the password if it already exists.
     try {
@@ -84,6 +98,7 @@ else {
         if ($_.CategoryInfo.Reason -eq 'UserExistsException') {
             Write-Output "Local Admin '$userName' already exists. Changing password."
             $userExists = $true
+            Disable-BuiltInAdmin
         }
         else {
             $exitCode = -1
@@ -106,6 +121,8 @@ else {
         try {
             Add-LocalGroupMember -SID 'S-1-5-32-544' -Member $userName
             Write-Output "Added Local User '$userName' to Local Administrators Group"
+            Disable-BuiltInAdmin
+
         }
         catch {
             $exitCode = -1
