@@ -20,8 +20,10 @@ function Disable-BuiltInAdmin {
     
 }
 
+# -----------------------------------------------------------------------------------------------------------------------------------
 
-# ===================================================================================================================================
+
+
 
 if (-not [System.Environment]::Is64BitProcess) {
     # start new PowerShell as x64 bit process, wait for it and gather exit code and standard error output
@@ -48,8 +50,17 @@ if (-not [System.Environment]::Is64BitProcess) {
 }
 else {
     #region Configuration
+    # == VARIABLES ======================================================================================================================
+    # -- Variabes to be set to suit your requirements
+
     # Define the userName for the Local Administrator
-    $userName = "acl.iadmin"
+    $userName = "acl.iadmin" 
+
+    # Azure Function Uri (containing "azurewebsites.net") for storing Local Administrator secret in Azure Key Vault
+    $uri = 'https://acl-fun-slaps-01.azurewebsites.net/api/Set-KeyVaultSecret?code=cfDXX5dvJ06bQHVqO8qWpEdalmKKVMA2lN25h7QBxLxusk0mzMRBaw=='
+
+
+    # ------------------------------------------------------------------------------------------------------------------------------------
 
     # Get system info for tags
     $Model = (Get-CimInstance -ClassName Win32_ComputerSystem).Model
@@ -58,9 +69,8 @@ else {
     $OS_Version = (Get-CimInstance -ClassName Win32_OperatingSystem).version
     $OS_Edition = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").ProductName
 
-    # Azure Function Uri (containing "azurewebsites.net") for storing Local Administrator secret in Azure Key Vault
-    # $uri = 'https://myfunctions.azurewebsites.net/api/Set-KeyVaultSecret?code=s0mer4nd0mstr1ng/pIZPg=='
-    $uri = 'https://acl-fun-slaps-01.azurewebsites.net/api/Set-KeyVaultSecret?code=cfDXX5dvJ06bQHVqO8qWpEdalmKKVMA2lN25h7QBxLxusk0mzMRBaw=='
+    
+    
     #endregion
 
     # Hide the $uri (containing "azurewebsites.net") from logs to prevent manipulation of Azure Key Vault
