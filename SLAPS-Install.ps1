@@ -1,3 +1,7 @@
+
+ # start logging to TEMP in file "scriptname.log"
+ $null = Start-Transcript -Path "$env:TEMP\$($(Split-Path $PSCommandPath -Leaf).ToLower().Replace(".ps1",".log"))"
+
 $installPath = "C:\ProgramData\Microsoft\SLAPS"
 
 if (![System.IO.Directory]::Exists($installPath)) {
@@ -24,3 +28,6 @@ $LTR = (Get-ScheduledTask | Where-Object {$_.TaskName -like "$taskName"} | Get-S
 if ($LTR -eq "267011") {
     Start-ScheduledTask -TaskName "$taskName" | Out-Null
 }
+
+
+$null = Stop-Transcript
