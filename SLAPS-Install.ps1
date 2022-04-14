@@ -27,6 +27,8 @@ $LTR = (Get-ScheduledTask | Where-Object {$_.TaskName -like "$taskName"} | Get-S
 
 if ($LTR -eq "267011") {
     Start-ScheduledTask -TaskName "$taskName" | Out-Null
+} else {
+    Write-Output "Scheduled task already present with run history.. no need for initial run."
 }
 
 
