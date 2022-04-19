@@ -18,8 +18,8 @@ $task = $null
 $task = Get-ScheduledTask | Where-Object {$_.TaskName -like "$taskName"}
     
 if ($task -eq $null) {
-        #Start-Process -FilePath $installPath\schtask.bat | Out-Null
-        & schtasks /Create /SC MONTHLY /MO 3 /TN "SLAPS Password Reset" /TR "Powershell.exe -WindowStyle Hidden -NonInteractive -ExecutionPolicy Bypass -File "C:\ProgramData\Microsoft\SLAPS\New-LocalAdmin.ps1"" /RU SYSTEM /RL HIGHEST /F >NUL
+        Start-Process -FilePath $installPath\schtask.bat | Out-Null
+        #Start-Process "schtasks /Create /SC MONTHLY /MO 3 /TN "SLAPS Password Reset" /TR "Powershell.exe -WindowStyle Hidden -NonInteractive -ExecutionPolicy Bypass -File "C:\ProgramData\Microsoft\SLAPS\New-LocalAdmin.ps1"" /RU SYSTEM /RL HIGHEST /F >NUL"
 }
 
 Start-Sleep 10
