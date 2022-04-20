@@ -24,12 +24,23 @@ if ($task -eq $null) {
 
 Start-Sleep 10
 
-$LTR = (Get-ScheduledTask | Where-Object {$_.TaskName -like "$taskName"} | Get-ScheduledTaskInfo).LastTaskResult
+# Apply additional settings for the Scheduled Task
+$task = Get-ScheduledTask | Where-Object {$_.TaskName -like "$taskName"}
 
-if ($LTR -eq "267011") {
-    Start-ScheduledTask -TaskName "$taskName" | Out-Null
+if ($task -eq $null) {
+    throw "The Scheduled Task has not installed properly. Cannot continue."
 } else {
-    Write-Output "Scheduled task already present with run history.. no need for initial run."
+    Set-ScheduledTask -TaskName $taskName -Settings $(New-ScheduledTaskSettingsSet -StartWhenAvailable)
+
+    Start-Sleep 5
+
+    $LTR = (Get-ScheduledTask | Where-Object {$_.TaskName -like "$taskName"} | Get-ScheduledTaskInfo).LastTaskResult
+
+    if ($LTR -eq "267011") {
+        Start-ScheduledTask -TaskName "$taskName" | Out-Null
+    } else {
+        Write-Output "Scheduled task already present with run history.. no need for initial run."
+    }
 }
 
 
