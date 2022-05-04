@@ -1,5 +1,54 @@
 
 
+Function Create-HttpTriggerFunction {
+
+    Param(
+      [Parameter (Mandatory=$True)]
+      [String] $funRG,
+      [String] $funName,
+      [String] $funLocation
+    )
+
+    $fnName = "Set-KeyVaultSecret"
+    $FileContent = "$(Get-Content $PSScriptRoot/Set-KeyVaultSecret.ps1 -Raw)"
+
+$TestData = @"
+{
+    "keyName": "",
+    "contentType": "Local Administrator Credentials",
+    "tags": {
+        "Username": ""
+    }
+}
+"@
+
+
+    $props = @{
+        config = @{
+            bindings = @(
+                @{
+                    type = "httpTrigger"
+                    direction = "in"
+                    webHookType = ""
+                    name = "req"
+                }
+                @{
+                    type = "http"
+                    direction = "out"
+                    name = "res"
+                }
+            )
+        }
+        files = @{
+            "run.ps1" = $FileContent
+        }
+        test_data = $TestData
+    }
+
+    New-AzResource -ResourceGroupName $funRG -ResourceType Microsoft.Web/sites -ResourceName $funName -Location $funLocation -PropertyObject $props -Force
+}
+
+
 
 $null = Start-Transcript -Path "$env:SystemRoot\TEMP\$($(Split-Path $PSCommandPath -Leaf).ToLower().Replace(".ps1",".log"))"
 
@@ -7,7 +56,7 @@ $null = Start-Transcript -Path "$env:SystemRoot\TEMP\$($(Split-Path $PSCommandPa
 # -- Variabes to be set to suit your requirements within the variables.json file
 $JSON = Get-Content -Raw -Path $PSScriptRoot/variables.json
 $var = @{}
-(ConvertFrom-Json $varImport).psobject.properties | Foreach-object { $var[$_.Name] = $_.Value }
+(ConvertFrom-Json $JSON).psobject.properties | Foreach-object { $var[$_.Name] = $_.Value }
 
 $azTen = $var.Azure_Tenent_ID
 $azSub = $var.Azure_Subscription_ID
@@ -25,9 +74,19 @@ $funStorage = $var.Azure_Storage_Name
 
 # ------------------------------------------------------------------------------------------------------------------------------------
 
-$AzSession = Connect-AzAccount -Tenant $azTen -SubscriptionId $azSub
+if ($azTen) {} else {
+    Write-Error "Unable to get values from variables.json"
+    $null = Stop-Transcript
+    exit
+}
 
-if ($AzSession) {} else {
+if (Get-AzContext) {} else {
+    Connect-AzAccount -Tenant $azTen -SubscriptionId $azSub
+}
+
+
+
+if (Get-AzContext) {} else {
     Write-Error "Unable to establish session to AzureCloud"
     $null = Stop-Transcript
     exit
@@ -65,6 +124,10 @@ $funObj = (Get-AzADServicePrincipal -SearchString $funName).Id
 
 # Configure access policy
 Set-AzKeyVaultAccessPolicy -VaultName $vaultName -ObjectId $funObj -PermissionsToSecrets Get,Set
+
+Start-Sleep 10
+
+Create-HttpTriggerFunction -funRG $funRG -funName $funName -funLocation $funLocation
 
 
 $null = Stop-Transcript
