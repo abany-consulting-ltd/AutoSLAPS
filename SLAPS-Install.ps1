@@ -8,7 +8,7 @@ if (![System.IO.Directory]::Exists($installPath)) {
     New-Item -ItemType Directory -Force -Path $installPath
 }
 
-Copy-Item -Path .\New-LocalAdmin.ps1 -Destination $installPath
+Copy-Item -Path '.\SLAPS-Rotate.ps1' -Destination $installPath
 Copy-Item -Path .\schtask.bat -Destination $installPath
 
 
