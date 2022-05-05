@@ -6,7 +6,8 @@ Function Create-HttpTriggerFunction {
       [Parameter (Mandatory=$True)]
       [String] $funRG,
       [String] $funName,
-      [String] $funLocation
+      [String] $funLocation,
+      [String] $funTestData
     )
 
     $fnName = "Set-KeyVaultSecret"
@@ -27,7 +28,10 @@ Function Create-HttpTriggerFunction {
                     direction = "in"
                     webHookType = ""
                     name = "Request"
-                    methods = "get,post"
+                        methods = @(
+                            "get"
+                            "post"
+                            )
                     }
                     @{
                     type = "http"
@@ -39,7 +43,7 @@ Function Create-HttpTriggerFunction {
         files = @{
             "run.ps1" = $FileContent
         }
-        test_data = $null
+        test_data = $funTestData
         invoke_url_template = "https://$funName.azurewebsites.net/api/set-keyvaultsecret"
         language = "powershell"
         isDisabled = $false
@@ -71,6 +75,8 @@ $funName = $var.Azure_Function_Name
 $funRG = $var.Azure_Function_ResourceGroup
 $funLocation = $var.Azure_Function_Location
 $funStorage = $var.Azure_Storage_Name
+$funTestData = $var.Test_Data
+$admin_Username = $var.Local_Admin_UserName
 
 # ------------------------------------------------------------------------------------------------------------------------------------
 
@@ -129,7 +135,14 @@ Set-AzKeyVaultAccessPolicy -VaultName $vaultName -ObjectId $funObj -PermissionsT
 
 Start-Sleep 10
 
-Create-HttpTriggerFunction -funRG $funRG -funName $funName -funLocation $funLocation
+$http_KeyVault = Create-HttpTriggerFunction -funRG $funRG -funName $funName -funLocation $funLocation -funTestData $funTestData
+
+$http_KeyVault_key = (Invoke-AzResourceAction -ResourceId $($http_KeyVault.ResourceId) -Action "listKeys" -Force).default
+
+$http_KeyVault_URI = "https://$funName.azurewebsites.net/api/Set-KeyVaultSecret?code=$http_KeyVault_key"
+
+(Get-Content $PSScriptRoot\SLAPS-Rotate.ps1) -Replace 'AZ_FUN_URI', $http_KeyVault_URI | Set-Content $PSScriptRoot\SLAPS-Rotate.ps1 
+(Get-Content $PSScriptRoot\SLAPS-Rotate.ps1) -Replace 'ADMIN.NAME', $admin_Username | Set-Content $PSScriptRoot\SLAPS-Rotate.ps1 
 
 
 $null = Stop-Transcript
