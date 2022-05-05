@@ -12,37 +12,37 @@ Function Create-HttpTriggerFunction {
     $fnName = "Set-KeyVaultSecret"
     $FileContent = "$(Get-Content $PSScriptRoot/Set-KeyVaultSecret.ps1 -Raw)"
 
-$TestData = @"
-{
-    "keyName": "",
-    "contentType": "Local Administrator Credentials",
-    "tags": {
-        "Username": ""
-    }
-}
-"@
-
-
     $props = @{
-        config = @{
-            bindings = @(
-                @{
+        name = "Set-KeyVaultSecret"
+        script_root_path_href = "https://acl-fun-slaps-01.azurewebsites.net/admin/vfs/site/wwwroot/Set-KeyVaultSecret/"
+        script_href = "https://acl-fun-slaps-01.azurewebsites.net/admin/vfs/site/wwwroot/Set-KeyVaultSecret/run.ps1"
+        config_href = "https://acl-fun-slaps-01.azurewebsites.net/admin/vfs/site/wwwroot/Set-KeyVaultSecret/function.json"
+        test_data_href = "https://acl-fun-slaps-01.azurewebsites.net/admin/vfs/data/Functions/sampledata/Set-KeyVaultSecret.dat"
+        href = "https://acl-fun-slaps-01.azurewebsites.net/admin/functions/Set-KeyVaultSecret"
+            config = @{
+                bindings = @(
+                    @{
+                    authLevel = "function"
                     type = "httpTrigger"
                     direction = "in"
                     webHookType = ""
-                    name = "req"
-                }
-                @{
+                    name = "Request"
+                    methods = "get,post"
+                    }
+                    @{
                     type = "http"
                     direction = "out"
-                    name = "res"
-                }
-            )
+                    name = "Response"
+                    }
+                )
         }
         files = @{
             "run.ps1" = $FileContent
         }
-        test_data = $TestData
+        test_data = $null
+        invoke_url_template = "https://acl-fun-slaps-01.azurewebsites.net/api/set-keyvaultsecret"
+        language = "powershell"
+        isDisabled = false
     }
 
     New-AzResource -ResourceGroupName $funRG -ResourceType Microsoft.Web/sites -ResourceName $funName -Location $funLocation -PropertyObject $props -Force
