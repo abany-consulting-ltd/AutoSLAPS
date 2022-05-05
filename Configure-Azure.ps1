@@ -11,7 +11,7 @@ Function Create-HttpTriggerFunction {
     )
 
     $fnName = "Set-KeyVaultSecret"
-    $FileContent = "$(Get-Content $PSScriptRoot/Set-KeyVaultSecret.ps1 -Raw)"
+    $FileContent = "$(Get-Content $env:SystemRoot\TEMP\Set-KeyVaultSecret.ps1 -Raw)"
 
     $props = @{
         name = "Set-KeyVaultSecret"
@@ -131,7 +131,7 @@ $funObj = (Get-AzADServicePrincipal -SearchString $funName).Id
 # Configure access policy
 Set-AzKeyVaultAccessPolicy -VaultName $vaultName -ObjectId $funObj -PermissionsToSecrets Get,Set
 
-(Get-Content $PSScriptRoot\Set-KeyVaultSecret.ps1) -Replace 'AZ_VAULT_NAME', $vaultName | Set-Content $PSScriptRoot\Set-KeyVaultSecret.ps1 
+(Get-Content $PSScriptRoot\Set-KeyVaultSecret.ps1) -Replace 'AZ_VAULT_NAME', $vaultName | Set-Content $env:SystemRoot\TEMP\Set-KeyVaultSecret.ps1 
 
 Start-Sleep 10
 
@@ -141,8 +141,26 @@ $http_KeyVault_key = (Invoke-AzResourceAction -ResourceId $($http_KeyVault.Resou
 
 $http_KeyVault_URI = "https://$funName.azurewebsites.net/api/Set-KeyVaultSecret?code=$http_KeyVault_key"
 
-(Get-Content $PSScriptRoot\SLAPS-Rotate.ps1) -Replace 'AZ_FUN_URI', $http_KeyVault_URI | Set-Content $PSScriptRoot\SLAPS-Rotate.ps1 
-(Get-Content $PSScriptRoot\SLAPS-Rotate.ps1) -Replace 'ADMIN.NAME', $admin_Username | Set-Content $PSScriptRoot\SLAPS-Rotate.ps1 
+(Get-Content $PSScriptRoot\SLAPS-Rotate.ps1) -Replace 'AZ_FUN_URI', $http_KeyVault_URI | Set-Content $env:SystemRoot\TEMP\SLAPS-Rotate.ps1 
+(Get-Content $PSScriptRoot\SLAPS-Rotate.ps1) -Replace 'ADMIN.NAME', $admin_Username | Set-Content $env:SystemRoot\TEMP\SLAPS-Rotate.ps1 
+
+# Package the Intune application
+if (![System.IO.Directory]::Exists("C:\SLAPS")) {
+    New-Item -ItemType Directory -Force -Path "C:\SLAPS"
+}
+
+Copy-Item -Path $PSScriptRoot\schtask.bat -Destination "C:\SLAPS"
+Copy-Item -Path $PSScriptRoot\SLAPS-Install.ps1 -Destination "C:\SLAPS"
+Copy-Item -Path $env:SystemRoot\TEMP\SLAPS-Rotate.ps1 -Destination "C:\SLAPS"
+
+Set-Location $PSScriptRoot
+.\IntuneWinAppUtil.exe -c C:\SLAPS -s C:\SLAPS\SLAPS-Install.ps1 -o C:\
+
+
+# Clean up
+Remove-Item -Path $env:SystemRoot\TEMP\Set-KeyVaultSecret.ps1 -Force
+Remove-Item -Path $env:SystemRoot\TEMP\SLAPS-Rotate.ps1 -Force
+
 
 
 $null = Stop-Transcript
