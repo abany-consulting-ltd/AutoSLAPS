@@ -54,10 +54,10 @@ else {
     # -- Variabes to be set to suit your requirements
 
     # Define the userName for the Local Administrator
-    $userName = "acl.iadmin" 
+    $userName = "ADMIN.NAME" 
 
     # Azure Function Uri (containing "azurewebsites.net") for storing Local Administrator secret in Azure Key Vault
-    $uri = 'https://acl-fun-slaps-01.azurewebsites.net/api/Set-KeyVaultSecret?code=cfDXX5dvJ06bQHVqO8qWpEdalmKKVMA2lN25h7QBxLxusk0mzMRBaw=='
+    $uri = "AZ_FUN_URI"
 
 
     # ------------------------------------------------------------------------------------------------------------------------------------
