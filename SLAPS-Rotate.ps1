@@ -1,5 +1,17 @@
-# New-LocalUser is only available in a x64 PowerShell process. We need to restart the script as x64 bit first.
+########################################################################################################################################################
+#
+# SLAPS-Rotate.ps1
+# -----------------------
+# 
+# AUTHOR(S): Mark Kinsey (https://www.linkedin.com/in/markdkinsey/)
+#
+# 
 # Based on a template created by Oliver Kieselbach @ https://gist.github.com/okieselbach/4f11ba37a6848e08e8f82d9f2ffff516
+# -- IMPORTANT - DO NOT CHANGE ANY VARIABLES IN THIS FILE --
+#
+#########################################################################################################################################################
+
+
 $exitCode = 0
 
 # == FUNCTIONS ======================================================================================================================
@@ -23,7 +35,7 @@ function Disable-BuiltInAdmin {
 # -----------------------------------------------------------------------------------------------------------------------------------
 
 
-
+# New-LocalUser is only available in a x64 PowerShell process. We need to restart the script as x64 bit first.
 
 if (-not [System.Environment]::Is64BitProcess) {
     # start new PowerShell as x64 bit process, wait for it and gather exit code and standard error output
@@ -51,7 +63,7 @@ if (-not [System.Environment]::Is64BitProcess) {
 else {
     #region Configuration
     # == VARIABLES ======================================================================================================================
-    # -- Variabes to be set to suit your requirements
+    # -- IMPORTANT - DO NOT CHANGE ANY VARIABLES IN THIS FILE --
 
     # Define the userName for the Local Administrator
     $userName = "ADMIN.NAME" 
