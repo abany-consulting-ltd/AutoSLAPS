@@ -42,7 +42,7 @@ Function Create-HttpTriggerFunction {
         test_data = $null
         invoke_url_template = "https://$funName.azurewebsites.net/api/set-keyvaultsecret"
         language = "powershell"
-        isDisabled = false
+        isDisabled = $false
     }
 
     New-AzResource -ResourceGroupName $funRG -ResourceType Microsoft.Web/sites/functions -ResourceName $funName/$fnName -Location $funLocation -PropertyObject $props -Force
