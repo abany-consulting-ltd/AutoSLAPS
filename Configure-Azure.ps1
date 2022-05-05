@@ -14,11 +14,11 @@ Function Create-HttpTriggerFunction {
 
     $props = @{
         name = "Set-KeyVaultSecret"
-        script_root_path_href = "https://acl-fun-slaps-01.azurewebsites.net/admin/vfs/site/wwwroot/Set-KeyVaultSecret/"
-        script_href = "https://acl-fun-slaps-01.azurewebsites.net/admin/vfs/site/wwwroot/Set-KeyVaultSecret/run.ps1"
-        config_href = "https://acl-fun-slaps-01.azurewebsites.net/admin/vfs/site/wwwroot/Set-KeyVaultSecret/function.json"
-        test_data_href = "https://acl-fun-slaps-01.azurewebsites.net/admin/vfs/data/Functions/sampledata/Set-KeyVaultSecret.dat"
-        href = "https://acl-fun-slaps-01.azurewebsites.net/admin/functions/Set-KeyVaultSecret"
+        script_root_path_href = "https://$funName.azurewebsites.net/admin/vfs/site/wwwroot/Set-KeyVaultSecret/"
+        script_href = "https://$funName.azurewebsites.net/admin/vfs/site/wwwroot/Set-KeyVaultSecret/run.ps1"
+        config_href = "https://$funName.azurewebsites.net/admin/vfs/site/wwwroot/Set-KeyVaultSecret/function.json"
+        test_data_href = "https://$funName.azurewebsites.net/admin/vfs/data/Functions/sampledata/Set-KeyVaultSecret.dat"
+        href = "https://$funName.azurewebsites.net/admin/functions/Set-KeyVaultSecret"
             config = @{
                 bindings = @(
                     @{
@@ -40,7 +40,7 @@ Function Create-HttpTriggerFunction {
             "run.ps1" = $FileContent
         }
         test_data = $null
-        invoke_url_template = "https://acl-fun-slaps-01.azurewebsites.net/api/set-keyvaultsecret"
+        invoke_url_template = "https://$funName.azurewebsites.net/api/set-keyvaultsecret"
         language = "powershell"
         isDisabled = false
     }
