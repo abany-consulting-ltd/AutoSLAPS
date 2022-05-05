@@ -45,7 +45,7 @@ Function Create-HttpTriggerFunction {
         isDisabled = false
     }
 
-    New-AzResource -ResourceGroupName $funRG -ResourceType Microsoft.Web/sites -ResourceName $funName -Location $funLocation -PropertyObject $props -Force
+    New-AzResource -ResourceGroupName $funRG -ResourceType Microsoft.Web/sites/functions -ResourceName $funName/$fnName -Location $funLocation -PropertyObject $props -Force
 }
 
 
