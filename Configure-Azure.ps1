@@ -95,7 +95,7 @@ if (Get-AzContext) {} else {
 
 # Create the vault
 try {
-    $NewKeyVault = New-AzKeyVault -Name $vaultName -ResourceGroupName $vaultRG -Location $vaultLocation
+    New-AzKeyVault -Name $vaultName -ResourceGroupName $vaultRG -Location $vaultLocation
 }
 catch {
     Write-Error $_
@@ -108,7 +108,7 @@ catch {
 
 # Create the function
 try {
-    $NewFunctionApp = New-AzFunctionApp -Name $funName -ResourceGroupName $funRG -Location $funLocation -StorageAccountName $funStorage -Runtime PowerShell
+    New-AzFunctionApp -Name $funName -ResourceGroupName $funRG -Location $funLocation -StorageAccountName $funStorage -Runtime PowerShell
 }
 catch {
     Write-Error $_
@@ -124,6 +124,8 @@ $funObj = (Get-AzADServicePrincipal -SearchString $funName).Id
 
 # Configure access policy
 Set-AzKeyVaultAccessPolicy -VaultName $vaultName -ObjectId $funObj -PermissionsToSecrets Get,Set
+
+(Get-Content $PSScriptRoot\Set-KeyVaultSecret.ps1) -Replace 'AZ_VAULT_NAME', $vaultName | Set-Content $PSScriptRoot\Set-KeyVaultSecret.ps1 
 
 Start-Sleep 10
 
