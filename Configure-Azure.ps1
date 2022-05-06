@@ -61,6 +61,45 @@ Function Create-HttpTriggerFunction {
 
 
 
+function Install-IntuneApp {
+    param (
+        OptionalParameters
+    )
+    
+    # Package MSI as .intunewin file
+    $SourceFolder = "C:\Win32Apps\Source\7-Zip"
+    $SetupFile = "7z1900-x64.msi"
+    $OutputFolder = "C:\Win32Apps\Output"
+    $Win32AppPackage = New-IntuneWin32AppPackage -SourceFolder $SourceFolder -SetupFile $SetupFile -OutputFolder $OutputFolder -Verbose
+
+    # Get MSI meta data from .intunewin file
+    $IntuneWinFile = $Win32AppPackage.Path
+    $IntuneWinMetaData = Get-IntuneWin32AppMetaData -FilePath $IntuneWinFile
+
+    # Create custom display name like 'Name' and 'Version'
+    $DisplayName = $IntuneWinMetaData.ApplicationInfo.Name + " " + $IntuneWinMetaData.ApplicationInfo.MsiInfo.MsiProductVersion
+    $Publisher = $IntuneWinMetaData.ApplicationInfo.MsiInfo.MsiPublisher
+
+    # Create MSI detection rule
+    $DetectionRule = New-IntuneWin32AppDetectionRuleMSI -ProductCode $IntuneWinMetaData.ApplicationInfo.MsiInfo.MsiProductCode -ProductVersionOperator "greaterThanOrEqual" -ProductVersion $IntuneWinMetaData.ApplicationInfo.MsiInfo.MsiProductVersion
+
+    # Create custom return code
+    $ReturnCode = New-IntuneWin32AppReturnCode -ReturnCode 1337 -Type "retry"
+
+    # Convert image file to icon
+    $ImageFile = "C:\Win32Apps\Logos\7-Zip.png"
+    $Icon = New-IntuneWin32AppIcon -FilePath $ImageFile
+
+    # Add new MSI Win32 app
+    $Win32App = Add-IntuneWin32App -FilePath $IntuneWinFile -DisplayName $DisplayName -Description "Install 7-zip application" -Publisher $Publisher -InstallExperience "system" -RestartBehavior "suppress" -DetectionRule $DetectionRule -ReturnCode $ReturnCode -Icon $Icon -Verbose
+
+    # Add assignment for all users
+    Add-IntuneWin32AppAssignmentAllUsers -ID $Win32App.id -Intent "available" -Notification "showAll" -Verbose
+
+}
+
+
+
 $null = Start-Transcript -Path "$env:SystemRoot\TEMP\$($(Split-Path $PSCommandPath -Leaf).ToLower().Replace(".ps1",".log"))"
 
 # == IMPORT VARIABLES =================================================================================================================
@@ -142,23 +181,24 @@ Set-AzKeyVaultAccessPolicy -VaultName $vaultName -ObjectId $funObj -PermissionsT
 
 Start-Sleep 10
 
+# Get function URI
 $http_KeyVault = Create-HttpTriggerFunction -funRG $funRG -funName $funName -funLocation $funLocation -funTestData $funTestData
-
 $http_KeyVault_key = (Invoke-AzResourceAction -ResourceId $($http_KeyVault.ResourceId) -Action "listKeys" -Force).default
-
 $http_KeyVault_URI = "https://$funName.azurewebsites.net/api/Set-KeyVaultSecret?code=$http_KeyVault_key"
 
-(Get-Content $PSScriptRoot\SLAPS-Rotate.ps1) -Replace 'AZ_FUN_URI', $http_KeyVault_URI | Set-Content $env:SystemRoot\TEMP\SLAPS-Rotate.ps1 
-(Get-Content $PSScriptRoot\SLAPS-Rotate.ps1) -Replace 'ADMIN.NAME', $admin_Username | Set-Content $env:SystemRoot\TEMP\SLAPS-Rotate.ps1 
-
 # Package the Intune application
-if (![System.IO.Directory]::Exists("C:\SLAPS")) {
-    New-Item -ItemType Directory -Force -Path "C:\SLAPS"
+if (![System.IO.Directory]::Exists("$env:SystemRoot\TEMP\SLAPS")) {
+    New-Item -ItemType Directory -Force -Path "$env:SystemRoot\TEMP\SLAPS"
 }
 
-Copy-Item -Path $PSScriptRoot\schtask.bat -Destination "C:\SLAPS"
-Copy-Item -Path $PSScriptRoot\SLAPS-Install.ps1 -Destination "C:\SLAPS"
-Copy-Item -Path $env:SystemRoot\TEMP\SLAPS-Rotate.ps1 -Destination "C:\SLAPS"
+(Get-Content $PSScriptRoot\SLAPS-Rotate.ps1) -Replace 'AZ_FUN_URI', $http_KeyVault_URI | Set-Content $env:SystemRoot\TEMP\SLAPS\SLAPS-Rotate.ps1 
+(Get-Content $PSScriptRoot\SLAPS-Rotate.ps1) -Replace 'ADMIN.NAME', $admin_Username | Set-Content $env:SystemRoot\TEMP\SLAPS\SLAPS-Rotate.ps1 
+
+
+
+Copy-Item -Path $PSScriptRoot\schtask.bat -Destination "$env:SystemRoot\TEMP\SLAPS"
+Copy-Item -Path $PSScriptRoot\SLAPS-Install.ps1 -Destination "$env:SystemRoot\TEMP\SLAPS"
+
 
 Set-Location $PSScriptRoot
 .\IntuneWinAppUtil.exe -c C:\SLAPS -s C:\SLAPS\SLAPS-Install.ps1 -o C:\
