@@ -228,6 +228,7 @@ if (![System.IO.Directory]::Exists("$env:SystemRoot\TEMP\SLAPS")) {
 Copy-Item -Path $PSScriptRoot\schtask.bat -Destination "$env:SystemRoot\TEMP\SLAPS"
 Copy-Item -Path $PSScriptRoot\SLAPS-Install.ps1 -Destination "$env:SystemRoot\TEMP\SLAPS"
 
+Import-Module IntuneWin32App
 Connect-MSIntuneGraph -TenantID $azTen
 Install-IntuneApp -SourceFolder $SourceFolder -SetupFile $SetupFile -OutputFolder $OutputFolder
 
