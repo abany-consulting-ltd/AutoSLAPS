@@ -1,5 +1,5 @@
 
-$resetFile = Get-ChildItem -LiteralPath C:\ProgramData\Microsoft\SLAPS\New-LocalAdmin.ps1 -ErrorAction SilentlyContinue
+$resetFile = Get-ChildItem -LiteralPath C:\ProgramData\Microsoft\SLAPS\SLAPS-Rotate.ps1 -ErrorAction SilentlyContinue
 $adminUser = Get-LocalUser -Name acl.iadmin -ErrorAction SilentlyContinue
 $task = Get-ScheduledTask -TaskName "SLAPS Password Reset" -ErrorAction SilentlyContinue
 
