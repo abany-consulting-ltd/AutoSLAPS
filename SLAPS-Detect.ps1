@@ -8,18 +8,18 @@ if (($resetFile) -and ($adminUser) -and ($task)) {
     Exit 0
 }
 
-elseif (($resetFile) -and ($adminUser) -and ($task -eq $null)) {
-    Write-Output "Could not detect Scheduled Task"
-    Exit 1
-}
+#elseif (($resetFile) -and ($adminUser) -and ($task -eq $null)) {
+#   Write-Output "Could not detect Scheduled Task"
+#    Exit 1
+#}
 
-elseif (($resetFile) -and ($adminUser -eq $null) -and ($task)) {
-    Write-Output "Could not detect local admin account"
-    Exit 1
-}
+#elseif (($resetFile) -and ($adminUser -eq $null) -and ($task)) {
+#    Write-Output "Could not detect local admin account"
+#    Exit 1
+#}
 
 
-else {
-    Write-Output "Application not detected"
-    Exit 1
-}
+#else {
+#    Write-Output "Application not detected"
+#    Exit 1
+#}
