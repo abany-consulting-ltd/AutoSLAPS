@@ -81,8 +81,9 @@ function Install-IntuneApp {
     $Win32AppPackage = New-IntuneWin32AppPackage -SourceFolder $SourceFolder -SetupFile $SetupFile -OutputFolder $OutputFolder -Verbose
 
     # Get MSI meta data from .intunewin file
-    $IntuneWinFile = $Win32AppPackage.Path
-    $IntuneWinMetaData = Get-IntuneWin32AppMetaData -FilePath $IntuneWinFile
+    #$IntuneWinFilePath = "$env:SystemRoot\TEMP\SLAPS-Install.intunewin"
+    #$IntuneWinFile = $Win32AppPackage.Path
+    #$IntuneWinMetaData = Get-IntuneWin32AppMetaData -FilePath $IntuneWinFile
 
     # Create custom display name like 'Name' and 'Version'
     $DisplayName = "Serverless Local Administrator Password Solution (SLAPS)"
@@ -104,7 +105,7 @@ function Install-IntuneApp {
     #$Icon = New-IntuneWin32AppIcon -FilePath $ImageFile
 
     # Add new MSI Win32 app
-    $Win32App = Add-IntuneWin32App -FilePath $IntuneWinFile -DisplayName $DisplayName -Description $DisplayName -Publisher $Publisher -InstallExperience "system" -InstallCommandLine $InstallCLI -UninstallCommandLine $UnInstallCLI -RestartBehavior "suppress" -DetectionRule $DetectionRule -ReturnCode $ReturnCode <#-Icon $Icon #> -Verbose
+    $Win32App = Add-IntuneWin32App -FilePath $Win32AppPackage.Path -DisplayName $DisplayName -Description $DisplayName -Publisher $Publisher -InstallExperience "system" -InstallCommandLine $InstallCLI -UninstallCommandLine $UnInstallCLI -RestartBehavior "suppress" -DetectionRule $DetectionRule -ReturnCode $ReturnCode <#-Icon $Icon #> -Verbose
 
     # Add assignment for all users
     # Add-IntuneWin32AppAssignmentAllUsers -ID $Win32App.id -Intent "available" -Notification "showAll" -Verbose
@@ -220,7 +221,7 @@ if (![System.IO.Directory]::Exists("$env:SystemRoot\TEMP\SLAPS")) {
 }
 
 (Get-Content $PSScriptRoot\SLAPS-Rotate.ps1) -Replace 'AZ_FUN_URI', $http_KeyVault_URI | Set-Content $env:SystemRoot\TEMP\SLAPS\SLAPS-Rotate.ps1 
-(Get-Content $PSScriptRoot\SLAPS-Rotate.ps1) -Replace 'ADMIN.NAME', $admin_Username | Set-Content $env:SystemRoot\TEMP\SLAPS\SLAPS-Rotate.ps1 
+(Get-Content $env:SystemRoot\TEMP\SLAPS\SLAPS-Rotate.ps1) -Replace 'ADMIN.NAME', $admin_Username | Set-Content $env:SystemRoot\TEMP\SLAPS\SLAPS-Rotate.ps1 
 
 
 
@@ -231,8 +232,9 @@ Connect-MSIntuneGraph -TenantID $azTen
 Install-IntuneApp -SourceFolder $SourceFolder -SetupFile $SetupFile -OutputFolder $OutputFolder
 
 # Clean up
-Remove-Item -LiteralPath "$env:SystemRoot\TEMP\SLAPS" -Force -Recurse
-Remove-Item $env:SystemRoot\TEMP\SLAPS-Install.intunewin -Force
+#Remove-Item -LiteralPath "$env:SystemRoot\TEMP\SLAPS" -Force -Recurse
+#Remove-Item $env:SystemRoot\TEMP\SLAPS-Install.intunewin -Force
+#Remove-Item $env:SystemRoot\TEMP\Set-KeyVaultSecret.ps1 -Force
 
 
 
