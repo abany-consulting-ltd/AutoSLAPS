@@ -62,8 +62,20 @@ Function Create-HttpTriggerFunction {
 
 
 function Install-IntuneApp {
+
+    # ==========================================================================================================================================
+    #
+    # Function base code taken from https://github.com/MSEndpointMgr/IntuneWin32App
+    # Credit goes to all contributers within this repo
+    #
+    # ==========================================================================================================================================
+
     param (
-        OptionalParameters
+        [Parameter (Mandatory=$True)]
+      [String] $funRG,
+      [String] $funName,
+      [String] $funLocation,
+      [String] $funTestData
     )
     
     # Package MSI as .intunewin file
@@ -123,6 +135,10 @@ $funLocation = $var.Azure_Function_Location
 $funStorage = $var.Azure_Storage_Name
 $funTestData = $var.Test_Data
 $admin_Username = $var.Local_Admin_UserName
+
+# INTUNE APP
+$SourceFolder = "$env:SystemRoot\TEMP\SLAPS"
+$SetupFile = "SLAPS-Install.ps1"
 
 # ------------------------------------------------------------------------------------------------------------------------------------
 
