@@ -1,6 +1,8 @@
 
- # start logging to TEMP in file "scriptname.log"
- $null = Start-Transcript -Path "$env:TEMP\$($(Split-Path $PSCommandPath -Leaf).ToLower().Replace(".ps1",".log"))"
+# start logging to TEMP in file "scriptname.log"
+$scriptName = $MyInvocation.MyCommand.Name
+$transcriptFile = $ScriptName -replace ".ps1",".log"
+$null = Start-Transcript -Path "$env:SystemRoot\TEMP\$transcriptFile"
 
 $installPath = "C:\ProgramData\Microsoft\SLAPS"
 
