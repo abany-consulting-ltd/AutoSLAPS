@@ -7,7 +7,7 @@
 #
 #########################################################################################################################################################
 
-Function Create-HttpTriggerFunction {
+Function Install-HttpTriggerFunction {
 
     Param(
       [Parameter (Mandatory=$True)]
@@ -72,16 +72,12 @@ function Install-IntuneApp {
 
     param (
         [Parameter (Mandatory=$True)]
-      [String] $funRG,
-      [String] $funName,
-      [String] $funLocation,
-      [String] $funTestData
+        [String] $SourceFolder,
+        [String] $SetupFile,
+        [String] $OutputFolder
     )
     
     # Package MSI as .intunewin file
-    $SourceFolder = "C:\Win32Apps\Source\7-Zip"
-    $SetupFile = "7z1900-x64.msi"
-    $OutputFolder = "C:\Win32Apps\Output"
     $Win32AppPackage = New-IntuneWin32AppPackage -SourceFolder $SourceFolder -SetupFile $SetupFile -OutputFolder $OutputFolder -Verbose
 
     # Get MSI meta data from .intunewin file
@@ -89,37 +85,52 @@ function Install-IntuneApp {
     $IntuneWinMetaData = Get-IntuneWin32AppMetaData -FilePath $IntuneWinFile
 
     # Create custom display name like 'Name' and 'Version'
-    $DisplayName = $IntuneWinMetaData.ApplicationInfo.Name + " " + $IntuneWinMetaData.ApplicationInfo.MsiInfo.MsiProductVersion
-    $Publisher = $IntuneWinMetaData.ApplicationInfo.MsiInfo.MsiPublisher
+    $DisplayName = "Serverless Local Administrator Password Solution (SLAPS)"
+    $Publisher = "Abany Consulting Limited"
 
-    # Create MSI detection rule
-    $DetectionRule = New-IntuneWin32AppDetectionRuleMSI -ProductCode $IntuneWinMetaData.ApplicationInfo.MsiInfo.MsiProductCode -ProductVersionOperator "greaterThanOrEqual" -ProductVersion $IntuneWinMetaData.ApplicationInfo.MsiInfo.MsiProductVersion
+    # Create PowerShell script detection rule
+    $DetectionScriptFile = "$PSScriptRoot\SLAPS-Detect.ps1"
+    $DetectionRule = New-IntuneWin32AppDetectionRuleScript -ScriptFile $DetectionScriptFile -EnforceSignatureCheck $false -RunAs32Bit $false
 
     # Create custom return code
     $ReturnCode = New-IntuneWin32AppReturnCode -ReturnCode 1337 -Type "retry"
 
+    # Add install & uninstall command lines
+    $InstallCLI = "powershell -ex bypass -windowstyle Hidden -file SLAPS-Install.ps1"
+    $UnInstallCLI = "powershell -ex bypass -windowstyle Hidden -file SLAPS-Install.ps1"
+
     # Convert image file to icon
-    $ImageFile = "C:\Win32Apps\Logos\7-Zip.png"
-    $Icon = New-IntuneWin32AppIcon -FilePath $ImageFile
+    #$ImageFile = "C:\Win32Apps\Logos\7-Zip.png"
+    #$Icon = New-IntuneWin32AppIcon -FilePath $ImageFile
 
     # Add new MSI Win32 app
-    $Win32App = Add-IntuneWin32App -FilePath $IntuneWinFile -DisplayName $DisplayName -Description "Install 7-zip application" -Publisher $Publisher -InstallExperience "system" -RestartBehavior "suppress" -DetectionRule $DetectionRule -ReturnCode $ReturnCode -Icon $Icon -Verbose
+    $Win32App = Add-IntuneWin32App -FilePath $IntuneWinFile -DisplayName $DisplayName -Description $DisplayName -Publisher $Publisher -InstallExperience "system" -InstallCommandLine $InstallCLI -UninstallCommandLine $UnInstallCLI -RestartBehavior "suppress" -DetectionRule $DetectionRule -ReturnCode $ReturnCode <#-Icon $Icon #> -Verbose
 
     # Add assignment for all users
-    Add-IntuneWin32AppAssignmentAllUsers -ID $Win32App.id -Intent "available" -Notification "showAll" -Verbose
+    # Add-IntuneWin32AppAssignmentAllUsers -ID $Win32App.id -Intent "available" -Notification "showAll" -Verbose
 
 }
 
 
-
-$null = Start-Transcript -Path "$env:SystemRoot\TEMP\$($(Split-Path $PSCommandPath -Leaf).ToLower().Replace(".ps1",".log"))"
+$scriptName = $MyInvocation.MyCommand.Name
+$transcriptFile = $ScriptName -replace ".ps1",".log"
+$null = Start-Transcript -Path "$env:SystemRoot\TEMP\$transcriptFile"
 
 # == IMPORT VARIABLES =================================================================================================================
 # -- Variabes to be set to suit your requirements within the variables.json file
+
 $JSON = Get-Content -Raw -Path $PSScriptRoot/variables.json
 $var = @{}
 (ConvertFrom-Json $JSON).psobject.properties | Foreach-object { $var[$_.Name] = $_.Value }
 
+# AZURE CREDENTIALS
+$azUN = $var.Azure_Username
+$azPass = $var.Azure_Password
+$azSecPass = ConvertTo-SecureString $azPass -AsPlainText -Force
+$azCreds = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ($azUN, $azSecPass)
+
+
+# TENENCY INFO
 $azTen = $var.Azure_Tenent_ID
 $azSub = $var.Azure_Subscription_ID
 
@@ -139,8 +150,9 @@ $admin_Username = $var.Local_Admin_UserName
 # INTUNE APP
 $SourceFolder = "$env:SystemRoot\TEMP\SLAPS"
 $SetupFile = "SLAPS-Install.ps1"
+$OutputFolder = "$env:SystemRoot\TEMP"
 
-# ------------------------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------------------------------
 
 if ($azTen) {} else {
     Write-Error "Unable to get values from variables.json"
@@ -149,7 +161,7 @@ if ($azTen) {} else {
 }
 
 if (Get-AzContext) {} else {
-    Connect-AzAccount -Tenant $azTen -SubscriptionId $azSub
+    Connect-AzAccount -Tenant $azTen -SubscriptionId $azSub -Credential $azCreds
 }
 
 
@@ -198,7 +210,7 @@ Set-AzKeyVaultAccessPolicy -VaultName $vaultName -ObjectId $funObj -PermissionsT
 Start-Sleep 10
 
 # Get function URI
-$http_KeyVault = Create-HttpTriggerFunction -funRG $funRG -funName $funName -funLocation $funLocation -funTestData $funTestData
+$http_KeyVault = Install-HttpTriggerFunction -funRG $funRG -funName $funName -funLocation $funLocation -funTestData $funTestData
 $http_KeyVault_key = (Invoke-AzResourceAction -ResourceId $($http_KeyVault.ResourceId) -Action "listKeys" -Force).default
 $http_KeyVault_URI = "https://$funName.azurewebsites.net/api/Set-KeyVaultSecret?code=$http_KeyVault_key"
 
@@ -215,14 +227,12 @@ if (![System.IO.Directory]::Exists("$env:SystemRoot\TEMP\SLAPS")) {
 Copy-Item -Path $PSScriptRoot\schtask.bat -Destination "$env:SystemRoot\TEMP\SLAPS"
 Copy-Item -Path $PSScriptRoot\SLAPS-Install.ps1 -Destination "$env:SystemRoot\TEMP\SLAPS"
 
-
-Set-Location $PSScriptRoot
-.\IntuneWinAppUtil.exe -c C:\SLAPS -s C:\SLAPS\SLAPS-Install.ps1 -o C:\
-
+Connect-MSIntuneGraph -TenantID $azTen
+Install-IntuneApp -SourceFolder $SourceFolder -SetupFile $SetupFile -OutputFolder $OutputFolder
 
 # Clean up
-Remove-Item -Path $env:SystemRoot\TEMP\Set-KeyVaultSecret.ps1 -Force
-Remove-Item -Path $env:SystemRoot\TEMP\SLAPS-Rotate.ps1 -Force
+Remove-Item -LiteralPath "$env:SystemRoot\TEMP\SLAPS" -Force -Recurse
+Remove-Item $env:SystemRoot\TEMP\SLAPS-Install.intunewin -Force
 
 
 
