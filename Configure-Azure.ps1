@@ -101,11 +101,11 @@ function Install-IntuneApp {
     $UnInstallCLI = "powershell -ex bypass -windowstyle Hidden -file SLAPS-Install.ps1"
 
     # Convert image file to icon
-    #$ImageFile = "C:\Win32Apps\Logos\7-Zip.png"
-    #$Icon = New-IntuneWin32AppIcon -FilePath $ImageFile
+    $ImageFile = "$PSScriptRoot\appfiles\logo.png"
+    $Icon = New-IntuneWin32AppIcon -FilePath $ImageFile
 
     # Add new MSI Win32 app
-    $Win32App = Add-IntuneWin32App -FilePath $Win32AppPackage.Path -DisplayName $DisplayName -Description $DisplayName -Publisher $Publisher -InstallExperience "system" -InstallCommandLine $InstallCLI -UninstallCommandLine $UnInstallCLI -RestartBehavior "suppress" -DetectionRule $DetectionRule -ReturnCode $ReturnCode <#-Icon $Icon #> -Verbose
+    $Win32App = Add-IntuneWin32App -FilePath $Win32AppPackage.Path -DisplayName $DisplayName -Description $DisplayName -Publisher $Publisher -InstallExperience "system" -InstallCommandLine $InstallCLI -UninstallCommandLine $UnInstallCLI -RestartBehavior "suppress" -DetectionRule $DetectionRule -ReturnCode $ReturnCode -Icon $Icon -Verbose
 
     # Add assignment for all users
     # Add-IntuneWin32AppAssignmentAllUsers -ID $Win32App.id -Intent "available" -Notification "showAll" -Verbose
