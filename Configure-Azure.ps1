@@ -283,9 +283,9 @@ Connect-MSIntuneGraph -TenantID $azTen
 Install-IntuneApp -SourceFolder $SourceFolder -SetupFile $SetupFile -OutputFolder $OutputFolder
 
 # Clean up
-#Remove-Item -LiteralPath "$env:SystemRoot\TEMP\SLAPS" -Force -Recurse
-#Remove-Item $env:SystemRoot\TEMP\SLAPS-Install.intunewin -Force
-#Remove-Item $env:SystemRoot\TEMP\Set-KeyVaultSecret.ps1 -Force
+Remove-Item -LiteralPath "$env:SystemRoot\TEMP\SLAPS" -Force -Recurse
+Remove-Item $env:SystemRoot\TEMP\SLAPS-Install.intunewin -Force
+Remove-Item $env:SystemRoot\TEMP\Set-KeyVaultSecret.ps1 -Force
 
 
 
