@@ -86,7 +86,7 @@ function Install-IntuneApp {
     #$IntuneWinMetaData = Get-IntuneWin32AppMetaData -FilePath $IntuneWinFile
 
     # Create custom display name like 'Name' and 'Version'
-    $DisplayName = "Serverless Local Administrator Password Solution (SLAPS)"
+    $DisplayName = "AutoSLAPS"
     $Publisher = "Abany Consulting Limited"
 
     # Create PowerShell script detection rule
