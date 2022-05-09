@@ -155,6 +155,48 @@ $OutputFolder = "$env:SystemRoot\TEMP"
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 
+# -- Install module dependecies --
+
+# NuGet
+$packageProvider = Get-PackageProvider -Name Nuget -ListAvailable -ErrorAction SilentlyContinue
+if ($packageProvider)
+{
+    Write-Output "NuGet package provider $($packageProvider.Version) is already installed"
+}
+else
+{
+    Write-Output "Attempting to install NuGet package provider"
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -ForceBootstrap -Confirm:$false -Force
+}
+
+
+# Azure
+$AzModule = Get-InstalledModule Az
+if ($AzModule)
+{
+    Write-Output "Module $($AzModule.Name) is already installed"
+}
+else
+{
+    Write-Output "Attempting to install Az Module module"
+    Install-Module -Name Az -Repository PSGallery -Force
+}
+
+
+# Intune
+$inTuneModule = Get-InstalledModule IntuneWin32app
+if ($inTuneModule)
+{
+    Write-Output "Module $($inTuneModule.Name) is already installed"
+}
+else
+{
+    Write-Output "Attempting to install InTuneWin32App module"
+    Install-Module -Name IntuneWin32App -Repository PSGallery -Force
+}
+
+
+
 if ($azTen) {} else {
     Write-Error "Unable to get values from variables.json"
     $null = Stop-Transcript
@@ -166,12 +208,20 @@ if (Get-AzContext) {} else {
 }
 
 
-
 if (Get-AzContext) {} else {
     Write-Error "Unable to establish session to AzureCloud"
     $null = Stop-Transcript
     exit
 }
+
+$IntuneGraphConnection = Connect-MSIntuneGraph -TenantID $azTen
+
+if ($IntuneGraphConnection) {} else {
+    Write-Error "Unable to establish session to Intune Graph API"
+    $null = Stop-Transcript
+    exit
+}
+
 
 
 # Create the vault
