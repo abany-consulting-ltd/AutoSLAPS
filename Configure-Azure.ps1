@@ -98,7 +98,7 @@ function Install-IntuneApp {
 
     # Add install & uninstall command lines
     $InstallCLI = "powershell -ex bypass -windowstyle Hidden -file SLAPS-Install.ps1"
-    $UnInstallCLI = "powershell -ex bypass -windowstyle Hidden -file SLAPS-Install.ps1"
+    $UnInstallCLI = "powershell -ex bypass -windowstyle Hidden -file SLAPS-UnInstall.ps1"
 
     # Convert image file to icon
     $ImageFile = "$PSScriptRoot\appfiles\logo.png"
@@ -277,6 +277,7 @@ if (![System.IO.Directory]::Exists("$env:SystemRoot\TEMP\SLAPS")) {
 
 Copy-Item -Path $PSScriptRoot\schtask.bat -Destination "$env:SystemRoot\TEMP\SLAPS"
 Copy-Item -Path $PSScriptRoot\SLAPS-Install.ps1 -Destination "$env:SystemRoot\TEMP\SLAPS"
+Copy-Item -Path $PSScriptRoot\SLAPS-UnInstall.ps1 -Destination "$env:SystemRoot\TEMP\SLAPS"
 
 Import-Module IntuneWin32App
 Connect-MSIntuneGraph -TenantID $azTen
