@@ -23,7 +23,7 @@ if ($task -eq $null) {
     $tn = get-date -f hh:mm
     $taskTrigger = New-ScheduledTaskTrigger -Daily -DaysInterval 90 -At $tn
     $taskAction = New-ScheduledTaskAction -Execute 'PowerShell.exe' -Argument "-WindowStyle Hidden -NonInteractive -ExecutionPolicy Bypass -File C:\ProgramData\Microsoft\SLAPS\SLAPS-Rotate.ps1"
-    $taskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -RunOnlyIfNetworkAvailable
+    $taskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -RunOnlyIfNetworkAvailable -Hidden:$true
     Register-ScheduledTask -TaskName $taskName -Action $taskAction -Trigger $taskTrigger -User SYSTEM -Settings $taskSettings -RunLevel Highest
 }
 
