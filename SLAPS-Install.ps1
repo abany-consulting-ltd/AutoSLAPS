@@ -20,8 +20,11 @@ $task = $null
 $task = Get-ScheduledTask | Where-Object {$_.TaskName -like "$taskName"}
     
 if ($task -eq $null) {
-        Start-Process -FilePath $installPath\schtask.bat | Out-Null
-        #Start-Process "schtasks /Create /SC MONTHLY /MO 3 /TN "SLAPS Password Reset" /TR "Powershell.exe -WindowStyle Hidden -NonInteractive -ExecutionPolicy Bypass -File "C:\ProgramData\Microsoft\SLAPS\New-LocalAdmin.ps1"" /RU SYSTEM /RL HIGHEST /F >NUL"
+    $tn = get-date -f hh:mm
+    $taskTrigger = New-ScheduledTaskTrigger -Daily -DaysInterval 90 -At $tn
+    $taskAction = New-ScheduledTaskAction -Execute 'PowerShell.exe' -Argument "-WindowStyle Hidden -NonInteractive -ExecutionPolicy Bypass -File C:\ProgramData\Microsoft\SLAPS\SLAPS-Rotate.ps1"
+    $taskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -RunOnlyIfNetworkAvailable
+    Register-ScheduledTask -TaskName $taskName -Action $taskAction -Trigger $taskTrigger -User SYSTEM -Settings $taskSettings -RunLevel Highest
 }
 
 Start-Sleep 10
