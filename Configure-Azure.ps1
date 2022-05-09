@@ -149,6 +149,7 @@ $funTestData = $var.Test_Data
 $admin_Username = $var.Local_Admin_UserName
 
 # INTUNE APP
+$appVersion = $var.Intune_App_Version
 $SourceFolder = "$env:SystemRoot\TEMP\SLAPS"
 $SetupFile = "SLAPS-Install.ps1"
 $OutputFolder = "$env:SystemRoot\TEMP"
