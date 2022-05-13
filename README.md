@@ -3,18 +3,22 @@
 
 Au automated Serverless LAPS for deployment via Intune, to randomise Local Administrator passwords on a 3 month cycle and store all passwords in your Azure Vault.
 
+<br>
+
 ## Description
 
 The original work for these scripts are from https://github.com/jseerden/SLAPS, so full credit goes to J Seerden for the base scripts on which this project is being built upon.
 
 This project builds on the base scripts adding password rotation, and end-to-end automation for the creation of the required Azure Function and Azure Vault, all required access policies for the Vault (read/modify access for the function and a read only AzureAD group for IT access), and full packaging and deployment into Intune.
 
+<br>
 
 ## Requirements
 
 * An Azure subscription along with Intune licensing
 * A pre-configured Azure Storage blob.
 
+<br>
 
 ### Installation
 
@@ -51,9 +55,10 @@ This project builds on the base scripts adding password rotation, and end-to-end
 
 ```
 
-* Apply required attributes to the JSON file to suite your requirements. NO NOT EDIT THE ‘TEST_DATA’ LINE. (also do not edit any other variables within any other script. The ‘variables.JSON’ file controls everything)
-* From an elevated PS window, execute the Deploy-ASLAPS.ps1 file.
+* Apply attributes to the JSON file to suite your requirements. NO NOT EDIT THE ‘TEST_DATA’ LINE. (also do not edit any other variables within any other script. The ‘variables.JSON’ file controls everything)
+* From an elevated PS window, execute the .\Deploy-ASLAPS.ps1 file.
 
+<br>
 
 ### Testing
 
@@ -69,6 +74,8 @@ The first thing to test is the Azure Function, ensuring it is writing to the Vau
 * Above the script, click 'Test/Run'
 * In the right-hand pane, there should now be a test PC, with a test username of 'local.admin'. Click 'Run' to test.
 
+<br>
+
 Now let's check the Vault to ensure that the password has been stored ok.
 
 * Within Azure, search for Key Vaults
@@ -77,6 +84,8 @@ Now let's check the Vault to ensure that the password has been stored ok.
 * If the function is working properly, there should now be an entry for 'TESTPC001'
 * Click into it, and then click into the current version entry
 * Click 'Show Secret Value' to view the password.
+
+<br>
 
 Once the Azure compontents have been tested as working, you can now test the Intune application.
 
@@ -88,19 +97,26 @@ Once the Azure compontents have been tested as working, you can now test the Int
 * Search for your newly created test group, and click select the group.
 * Click 'Review + save' to apply the permissions.
 
+<br>
+
 Once this is done, head over to the Intune enrolled device where you shall be deploying the application to. Open 'Services', and restart the 'IntuneManagementExtension' service. This will force the IME agent to check into Intune for changes.
 
+<br>
 
+The application install does the following:
 
+* Copies the PS1 script that communicates with the Azure Function into 'C:\ProgramData\Microsoft\ASLAPS'
+* Adds additional files into this directory also for Intune detection
+* Creates a Scheduled Task called 'ASLAPS Password Reset'. This is for the password rotation schedule.
+* Creates the local admin account
+* Initiates an initial run of the Scheduled Task on install
 
-* A seperated installer file (SLAPS-Install.ps1), which does the following:
-    - Creates an install directory of C:\ProgramData\Microsoft\SLAPS, and copies across the 'New-LocalAdmin.ps1' and 'schtask.bat' files into this directory.
+<br>
 
-* Creates a Scheduled Task from the 'schtask.bat' file, to run every 3 months under the SYSTEM context. The task runs initially on first install.
+Once the install is complete, the initial Scheduled Task run will execute 'C:\ProgramData\Microsoft\ASLAPS\ASLAPS-Rotate.ps1', which in turn will communicate with the Azure Function to retrieve a password. This will then be set against the local admin account, as well as being stored in the Vault.
 
-* The Scheduled Task targets the 'New-LocalAdmin.ps1' script, which does the following:
-    - Checks for the presence of the specified Local Administrator account (the name set within the script under the $userName variable)
-    - If not found it will create and add to the Local Administrator group
+To test, head over to your Azure Vault, retrieve the password for the Intune device, and then open a program on the Intune device using the admin credentials (run as another user). 
+
 
 
 
