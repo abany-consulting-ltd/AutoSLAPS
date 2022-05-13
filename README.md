@@ -1,7 +1,7 @@
 
 # AutoSLAPS (Automated Serverless Local Administrator Password Solution)
 
-Au automated Serverless LAPS for deployment via Intune, to randomise Local Administrator passwords on a 3 month cycle and store all passwords in your Azure Vault.
+Au automated Serverless LAPS for deployment via Intune, to randomise Local Administrator passwords on a 90 day cycle and store all passwords in your Azure Vault.
 
 <br>
 
