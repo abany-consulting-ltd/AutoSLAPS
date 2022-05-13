@@ -17,7 +17,7 @@ This project builds on the base scripts adding password rotation, and end-to-end
 
 * An Azure subscription along with Intune licensing
 * A pre-configured Azure Storage blob.
-* Az, AzureAD and IntuneWin32App modules pre-installed on the computer where the install shall be run. (not essential as the scripts will check and download/import if necessary, but nice to pre-prepare for a more streamlined install)
+* 'Az', 'AzureAD' and 'IntuneWin32App' modules pre-installed on the computer where the install shall be run. (not essential as the scripts will check and download/import if necessary, but nice to pre-prepare for a more streamlined install)
 
 <br>
 
@@ -56,7 +56,7 @@ This project builds on the base scripts adding password rotation, and end-to-end
 
 ```
 
-* Apply attributes to the JSON file to suite your requirements. NO NOT EDIT THE ‘TEST_DATA’ LINE. (also do not edit any other variables within any other script. The ‘variables.JSON’ file controls everything)
+* Apply attributes to the JSON file to suite your requirements. <b>NO NOT EDIT THE ‘TEST_DATA’ LINE</b>
 * From an elevated PS window, execute the .\Deploy-ASLAPS.ps1 file.
 
 <br>
@@ -118,6 +118,20 @@ Once the install is complete, the initial Scheduled Task run will execute 'C:\Pr
 
 To test, head over to your Azure Vault, retrieve the password for the Intune device, and then open a program on the Intune device using the admin credentials (run as another user). 
 
+<br>
+
+## Troubleshooting
+
+Each script will produce a transcript file of <i>scriptname</i>.log within the 'C:\Windows\Temp' directory of the computer where the script is run.
+    
+<br>
+
+## Acknowledgments
+
+Base scripts and code snippets
+* [J Seerden](https://github.com/jseerden/SLAPS)
+* [Oliver Kieselbach](https://gist.github.com/okieselbach/4f11ba37a6848e08e8f82d9f2ffff516)
+* [Nickolaj Andersen](https://github.com/MSEndpointMgr/IntuneWin32App)
 
 
 
