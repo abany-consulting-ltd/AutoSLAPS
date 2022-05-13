@@ -3,6 +3,8 @@
 
 Au automated Serverless LAPS for deployment via Intune, to randomise Local Administrator passwords on a 90 day cycle and store all passwords in your Azure Vault.
 
+This is a full cloud solution, with no on-premise dependencies.
+
 <br>
 
 ## Description
