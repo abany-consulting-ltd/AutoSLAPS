@@ -1,18 +1,19 @@
+
 ########################################################################################################################################################
 #
-# SLAPS-Rotate.ps1
+# ASLAPS-Rotate.ps1
 # -----------------------
 # 
 # AUTHOR(S): Mark Kinsey (https://www.linkedin.com/in/markdkinsey/)
-#
+# Application Verion: 
 # 
 # Based on a template created by Oliver Kieselbach @ https://gist.github.com/okieselbach/4f11ba37a6848e08e8f82d9f2ffff516
 # -- IMPORTANT - DO NOT CHANGE ANY VARIABLES IN THIS FILE --
 #
 #########################################################################################################################################################
 
-
 $exitCode = 0
+
 
 # == FUNCTIONS ======================================================================================================================
 
@@ -63,12 +64,12 @@ if (-not [System.Environment]::Is64BitProcess) {
 else {
     #region Configuration
     # == VARIABLES ======================================================================================================================
-    # -- IMPORTANT - DO NOT CHANGE ANY VARIABLES IN THIS FILE --
 
-    # Define the userName for the Local Administrator
+    # -- DO NOT TOUCH THIS VARIABLE, IT WILL AUTO PUPULATE FROM '.\DEPLOY-ASLAPS.ps1'
     $userName = "ADMIN.NAME" 
 
     # Azure Function Uri (containing "azurewebsites.net") for storing Local Administrator secret in Azure Key Vault
+    # -- DO NOT TOUCH THIS VARIABLE, IT WILL AUTO PUPULATE FROM '.\DEPLOY-ASLAPS.ps1'
     $uri = "AZ_FUN_URI"
 
 
@@ -92,7 +93,7 @@ else {
     # start logging to TEMP in file "scriptname.log"
     $null = Start-Transcript -Path "$env:TEMP\$($(Split-Path $PSCommandPath -Leaf).ToLower().Replace(".ps1",".log"))"
 
-    # Azure Function Request Body. Azure Function will strip the keyName and add a secret value. https://docs.microsoft.com/en-us/rest/api/keyvault/setsecret/setsecret
+    # Azure Function Request Body. Azure Function will strip the keyName and add a secret value
     $body = @"
     {
         "keyName": "$env:COMPUTERNAME",

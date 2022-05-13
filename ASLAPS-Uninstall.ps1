@@ -13,18 +13,18 @@ if ($builtInAdmin.Enabled -eq "False") {
         if($?) {
             Write-Output "Enabled the built in Administrator account"
         } else {
-            Write-Output "Unable to enable the built in Administrator account. Uninstallation of AutoSLAPS will not continue until the built in Administrator account can be enabled."
+            Write-Output "Unable to enable the built in Administrator account. Uninstallation of AutoASLAPS will not continue until the built in Administrator account can be enabled."
             exit
         }
 }
 
 
 # Remove Scheduled Task
-Get-ScheduledTask "SLAPS Password Reset" | Unregister-ScheduledTask -Confirm:$False
+Get-ScheduledTask "ASLAPS Password Reset" | Unregister-ScheduledTask -Confirm:$False
 
 
 # Remove directory
-Remove-Item -LiteralPath "C:\ProgramData\Microsoft\SLAPS" -Force -Recurse
+Remove-Item -LiteralPath "C:\ProgramData\Microsoft\ASLAPS" -Force -Recurse
 
 
 $null = Stop-Transcript
