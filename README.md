@@ -75,6 +75,16 @@ The first thing to test is the Azure Function, ensuring it is writing to the Vau
 * Above the script, click 'Test/Run'
 * In the right-hand pane there should now be a test PC called 'TESTPC001' with a test username of 'local.admin'. Click 'Run' to test.
 
+```
+{
+        "keyName": "TESTPC001",
+        "contentType": "Local Administrator Credentials",
+        "tags": {
+            "Username": "local.admin"
+        }
+    }
+```
+
 <br>
 
 Now let's check the Vault to ensure that the password has been stored ok.
