@@ -273,8 +273,12 @@ Set-AzKeyVaultAccessPolicy -VaultName $vaultName -ObjectId $funObj -PermissionsT
 Start-Sleep 10
 
 # Create security group for read
-$ADGroup = New-AzureADGroup -DisplayName "AutoSLAPS Password Access" -MailEnabled $false -SecurityEnabled $true -MailNickName "NotSet"
-Set-AzKeyVaultAccessPolicy -VaultName $vaultName -ObjectId $ADGroup.ObjectId -PermissionsToKeys get -PermissionsToSecrets get
+$groupCheck = get-AzureADGroup -SearchString "AutoSLAPS Password Access"
+
+if ($groupCheck) {} else {
+    $ADGroup = New-AzureADGroup -DisplayName "AutoSLAPS Password Access" -MailEnabled $false -SecurityEnabled $true -MailNickName "NotSet"
+    Set-AzKeyVaultAccessPolicy -VaultName $vaultName -ObjectId $ADGroup.ObjectId -PermissionsToKeys get -PermissionsToSecrets get
+}
 
 # Get function URI
 $http_KeyVault = Install-HttpTriggerFunction -funRG $funRG -funName $funName -funLocation $funLocation -funTestData $funTestData
