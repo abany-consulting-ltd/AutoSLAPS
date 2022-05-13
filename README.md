@@ -24,7 +24,7 @@ This project builds on the base scripts adding password rotation, and end-to-end
 ## Installation
 
 * Download repo contents and unzip to a computer which has the modules installed as per requirements.
-* In the same directory, create a new file called ‘variables.JSON’ and copy across the following contents:
+* In the same directory, create a new file called ‘variables.json’ and copy across the following contents:
 
 ```
 {
@@ -67,13 +67,13 @@ When the installation is completed, it should have created an Azure Function, an
 
 The first thing to test is the Azure Function, ensuring it is writing to the Vault:
 
-* Within Azure, search for Function App, and ensure that the function is present with the name specified in the variables.json ("Azure_Function_Name":)
+* Within Azure, search for 'Function App', and ensure that the function is present with the name specified in the 'variables.json' file ("Azure_Function_Name":)
 * Click into the function, and click 'Functions' in the left hand pane.
 * Click into the 'Set-KeyVaultSecret' function
 * On the left, click 'Code + Test'
 * If all has gone well, the PS1 script should now be visible as a 'run.PS1' file. Ensure line 8 contains the name of your Azure Vault.
 * Above the script, click 'Test/Run'
-* In the right-hand pane, there should now be a test PC, with a test username of 'local.admin'. Click 'Run' to test.
+* In the right-hand pane there should now be a test PC called 'TESTPC001' with a test username of 'local.admin'. Click 'Run' to test.
 
 <br>
 
