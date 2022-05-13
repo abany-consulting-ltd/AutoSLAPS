@@ -5,7 +5,8 @@ param(
     $Request
 )
 
-$keyVaultName = "AZ_VAULT_NAME"
+$keyVaultName = "AZ_VAULT_NAME" # DO NOT EDIT
+$global:passLength = "PASS_LENGTH" # DO NOT EDIT
 
 # Azure Key Vault resource to obtain access token
 $vaultTokenUri = 'https://vault.azure.net'
@@ -28,18 +29,10 @@ function New-Password {
     $array[-1] = $array[-1].ToUpper()
     $array += $numbers | Get-Random -Count 3
     $array += $specialCharacters.Split(',') | Get-Random -Count 3
-    ($array | Get-Random -Count $array.Count) -join ""
+    ($array | Get-Random -Count $passLength) -join ""
 }
 
-Function Get-Password {
-    $alphabets = -join ('abcdefghkmnrstuvwxyzABCDEFGHKLMNPRSTUVWXYZ'.ToCharArray() | Get-Random -Count 10)   # Add characters and/or password length to suit your organisation's requirements
-    $numbers = -join ('23456789'.ToCharArray() | Get-Random -Count 3)
-    $specials = -join ('@?$%&*#!'.ToCharArray() | Get-Random -Count 3)   # Add characters and/or password length to suit your organisation's requirements
-    $clrPwd = $alphabets + $numbers + $specials
-    (Get-Random -Count 16 -InputObject ([char[]]$clrPwd)) -join ''
-}
-
-$password = Get-Password
+$password = New-Password
 
 # Generate a new body to set a secret in the Azure Key Vault
 $body = $request.body | Select-Object -Property * -ExcludeProperty keyName

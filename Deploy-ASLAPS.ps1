@@ -149,6 +149,8 @@ $SourceFolder = "$env:SystemRoot\TEMP\ASLAPS"
 $SetupFile = "ASLAPS-Install.ps1"
 $OutputFolder = "$env:SystemRoot\TEMP"
 
+$passLength = $var.Password_Char_Length
+
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 # -- Check module dependecies and install if missing --
@@ -263,7 +265,10 @@ $funObj = (Get-AzADServicePrincipal -SearchString $funName).Id
 Set-AzKeyVaultAccessPolicy -VaultName $vaultName -ObjectId $funObj -PermissionsToSecrets Get,Set
 
 # Import the vault name into the functions PS1 script
-(Get-Content $PSScriptRoot\Set-KeyVaultSecret.ps1) -Replace 'AZ_VAULT_NAME', $vaultName | Set-Content $env:SystemRoot\TEMP\Set-KeyVaultSecret.ps1 
+(Get-Content $PSScriptRoot\Set-KeyVaultSecret.ps1) -Replace 'AZ_VAULT_NAME', $vaultName | Set-Content $env:SystemRoot\TEMP\Set-KeyVaultSecret.ps1
+
+# Import the password length requirements
+(Get-Content $PSScriptRoot\Set-KeyVaultSecret.ps1) -Replace 'PASS_LENGTH', $passLength | Set-Content $env:SystemRoot\TEMP\Set-KeyVaultSecret.ps1
 
 Start-Sleep 10
 
