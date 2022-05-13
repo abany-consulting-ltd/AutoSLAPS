@@ -1,5 +1,5 @@
 
-# AutoSLAPS
+# AutoSLAPS (Automated Serverless Local Administrator Password Solution)
 
 Au automated Serverless LAPS for deployment via Intune, to randomise Local Administrator passwords on a 3 month cycle and store all passwords in your Azure Vault.
 
@@ -132,8 +132,15 @@ To test, head over to your Azure Vault, retrieve the password for the Intune dev
 
 ## Troubleshooting
 
-Each script will produce a transcript file of <i>scriptname</i>.log within the 'C:\Windows\Temp' directory of the computer where the script is run.
-    
+Each script will produce a transcript file of <i>scriptname</i>.log within the 'C:\Windows\Temp' directory of the computer where the script is executed.
+   
+<br>
+
+## Features being worked on pending release
+
+* Web portal for password retrieval
+* Auditing into Log Analytics workspace
+
 <br>
 
 ## Acknowledgments
