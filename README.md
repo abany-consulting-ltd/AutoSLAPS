@@ -17,10 +17,11 @@ This project builds on the base scripts adding password rotation, and end-to-end
 
 * An Azure subscription along with Intune licensing
 * A pre-configured Azure Storage blob.
+* Az, AzureAD and IntuneWin32App modules pre-installed on the computer where the install shall be run. (not essential as the scripts will check and download/import if necessary, but nice to pre-prepare for a more streamlined install)
 
 <br>
 
-### Installation
+## Installation
 
 * Download repo contents and unzip to a computer which has the modules installed as per requirements.
 * In the same directory, create a new file called ‘variables.JSON’ and copy across the following contents:
@@ -60,7 +61,7 @@ This project builds on the base scripts adding password rotation, and end-to-end
 
 <br>
 
-### Testing
+## Testing
 
 When the installation is completed, it should have created an Azure Function, and Azure Vault, and an Intune Win32 application called AutoSLAPS.
 
