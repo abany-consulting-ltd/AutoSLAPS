@@ -1,7 +1,9 @@
 
 # AutoSLAPS (Automated Serverless Local Administrator Password Solution)
 
-Au automated Serverless LAPS for deployment via Intune, to randomise Local Administrator passwords on a 3 month cycle and store all passwords in your Azure Vault.
+An automated Serverless LAPS for deployment via Intune, to randomise Local Administrator passwords on a 90 day cycle and store all passwords in your Azure Vault.
+
+This is a full cloud solution, with no on-premise dependencies.
 
 <br>
 
@@ -9,7 +11,7 @@ Au automated Serverless LAPS for deployment via Intune, to randomise Local Admin
 
 The original work for these scripts are from https://github.com/jseerden/SLAPS, so full credit goes to J Seerden for the base scripts on which this project is being built upon.
 
-This project builds on the base scripts adding password rotation, and end-to-end automation for the creation of the required Azure Function and Azure Vault, all required access policies for the Vault (read/modify access for the function and a read only AzureAD group for IT access), and full packaging and deployment into Intune.
+This project builds on the base scripts adding password rotation, end-to-end automation for the creation of the required Azure Function and Azure Vault, all required access policies for the Vault (read/modify access for the function and a read only AzureAD group for IT access), and full packaging and deployment into Intune.
 
 <br>
 
@@ -63,7 +65,7 @@ This project builds on the base scripts adding password rotation, and end-to-end
 
 ## Testing
 
-When the installation is completed, it should have created an Azure Function, and Azure Vault, and an Intune Win32 application called AutoSLAPS.
+When the installation is completed, it should have created an Azure Function, an Azure Vault, and an Intune Win32 application called AutoSLAPS.
 
 The first thing to test is the Azure Function, ensuring it is writing to the Vault:
 
