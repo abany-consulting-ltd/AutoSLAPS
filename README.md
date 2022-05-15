@@ -132,6 +132,12 @@ To test, head over to your Azure Vault, retrieve the password for the Intune dev
 
 <br>
 
+## Permissions
+
+During installation, an Azure security group will be created called 'AutoSLAPS Password Access', which has Read Only access for retrieving credentials from the vault.
+   
+<br>
+
 ## Troubleshooting
 
 Each script will produce a transcript file of <i>scriptname</i>.log within the 'C:\Windows\Temp' directory of the computer where the script is executed.
