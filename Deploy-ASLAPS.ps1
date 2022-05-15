@@ -1,6 +1,6 @@
 ########################################################################################################################################################
 #
-# Configure-Azure.ps1
+# Deploy-ASLAPS.ps1
 # -----------------------
 # 
 # AUTHOR(S): Mark Kinsey (https://www.linkedin.com/in/markdkinsey/)
@@ -268,7 +268,7 @@ Set-AzKeyVaultAccessPolicy -VaultName $vaultName -ObjectId $funObj -PermissionsT
 (Get-Content $PSScriptRoot\Set-KeyVaultSecret.ps1) -Replace 'AZ_VAULT_NAME', $vaultName | Set-Content $env:SystemRoot\TEMP\Set-KeyVaultSecret.ps1
 
 # Import the password length requirements
-(Get-Content $PSScriptRoot\Set-KeyVaultSecret.ps1) -Replace 'PASS_LENGTH', $passLength | Set-Content $env:SystemRoot\TEMP\Set-KeyVaultSecret.ps1
+(Get-Content $env:SystemRoot\TEMP\Set-KeyVaultSecret.ps1) -Replace 'PASS_LENGTH', $passLength | Set-Content $env:SystemRoot\TEMP\Set-KeyVaultSecret.ps1
 
 Start-Sleep 10
 
